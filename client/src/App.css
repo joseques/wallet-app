@@ -1,0 +1,97 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+.exchange-rate {
+  display: flex;
+  width: 50%;
+  gap: 10px;
+  justify-content: center;
+}
+
+.exchange-rate > div {
+  width: 75%;
+  background-color: grey;
+  border-radius: 20px;
+}
+
+.rate-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.rate-container button {
+  width: 100px;
+  align-self: center;
+}
+
+.rate-container select {
+  width: 200px;
+  margin: 5px auto;
+}
+
+.rate-container input,
+.rate-container p {
+  width: 200px;
+  margin: 10px auto 20px auto;
+}
+
+.rate-control-buttons {
+  display: flex;
+  align-self: center;
+}
+
+.wallet-favorite:hover {
+  color: gold;
+  cursor: pointer;
+}
+
+
+.wallets-list h2 {
+  margin-bottom: 5px;
+}
+
+.wallets-list li {
+  list-style: none;
+  background-color: gray;
+  color: black;
+  margin-bottom: 10px;
+} 
+
+.old-wallet{
+  background-color: wheat;
+  margin-bottom: 5px;
+}
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
