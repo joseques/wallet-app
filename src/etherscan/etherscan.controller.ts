@@ -18,21 +18,4 @@ export class EtherscanController {
   ): Promise<ExchangeRate | Error> {
     return this.etherscanService.setCustomExchangeRate(exchangeRate);
   }
-
-  @Delete('exchange-rate')
-  async clearExchangeRate(): Promise<ExchangeRate | Error> {
-    return this.etherscanService.setCustomExchangeRate(null);
-  }
-
-  @Get('last-transaction/:address')
-  async getLastTransaction(
-    @Param('address') address: string,
-  ): Promise<Transaction | Error> {
-    return this.etherscanService.getLastTransaction(address);
-  }
-
-  @Get('balance')
-  async getAccountsBalances(@Body() wallets: string[]) {
-    return this.etherscanService.getAccountsBalances(wallets);
-  }
 }

@@ -34,7 +34,7 @@ export class EtherscanService {
           res.data.result,
       )
       .catch((err: Error) => {
-        console.log(err);
+        console.error(err);
         throw err;
       });
   }
@@ -45,33 +45,48 @@ export class EtherscanService {
     return exchangeRate;
   }
 
-  async getLastTransaction(address: string): Promise<Transaction | Error> {
-    return axios
-      .get(ApiBaseEndpoint, {
-        params: {
-          module: 'account',
-          action: 'txlist',
-          startblock: 'latest',
-          endblock: 'latest',
-          page: 1,
-          offset: 1,
-          sort: 'desc',
-          apikey: process.env.ETHERSCAN_API_KEY,
-          address,
-        },
-      })
-      .then((res: AxiosResponse<EtherscanResponse<Transaction[]>>) =>
-        res.data.result.pop(),
-      )
-      .catch((err: Error) => {
-        console.log(err);
-        throw err;
-      });
+  async getBulkLastTransaction(addresses: string[]) {
+    const transactions: [string, Transaction | undefined][] = await Promise.all(
+      addresses.map(async (address: string) => {
+        try {
+          return [address, await this.getLastTransaction(address)];
+        } catch (err) {
+          console.error(err);
+          throw err;
+        }
+      }),
+    );
+
+    return new Map<string, Transaction | undefined>(transactions);
   }
 
-  async getAccountsBalances(
-    wallets: string[],
-  ): Promise<{ account: string; balance: number | string }[] | Error> {
+  async getLastTransaction(address: string) {
+    try {
+      const lastTX = await axios
+        .get(ApiBaseEndpoint, {
+          params: {
+            module: 'account',
+            action: 'txlist',
+            startblock: 'latest',
+            endblock: 'latest',
+            page: 1,
+            offset: 1,
+            sort: 'desc',
+            apikey: process.env.ETHERSCAN_API_KEY,
+            address,
+          },
+        })
+        .then((res: AxiosResponse<EtherscanResponse<Transaction[]>>) =>
+          res.data.result.pop(),
+        );
+      return lastTX;
+    } catch (err) {
+      console.error(err);
+      throw err;
+    }
+  }
+
+  async getAccountsBalances(wallets: string[]) {
     return axios
       .get(ApiBaseEndpoint, {
         params: {
@@ -83,13 +98,21 @@ export class EtherscanService {
         },
       })
       .then((res: AxiosResponse<EtherscanResponse<WalletBalance[]>>) => {
-        return res.data.result.map((account) => {
-          const balance = parseInt(account.balance as string);
-          return { ...account, balance: balance / 1e18 }; // wei to ether
-        });
+        const balances = res.data.result.reduce((acc, account) => {
+          let etherBalance = 0;
+
+          if (account.balance && account.balance !== '0') {
+            const balance = parseInt(account.balance as string);
+            etherBalance = balance / 1e18; // convert wei to ether
+          }
+
+          acc.set(account.account, etherBalance);
+          return acc;
+        }, new Map<string, number>());
+        return balances;
       })
       .catch((err: Error) => {
-        console.log(err);
+        console.error(err);
         throw err;
       });
   }

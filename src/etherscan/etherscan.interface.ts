@@ -1,7 +1,6 @@
 export interface ExchangeRate {
   ethusd?: string;
   ethusd_timestamp?: string;
-  etheur?: string;
 }
 
 export interface Transaction {
